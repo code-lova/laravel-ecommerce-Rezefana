@@ -85,7 +85,3 @@ vendor/bin/phpunit
 ```
 
 Only the default Laravel example tests are present — there is no test coverage for the app's business logic yet.
-
-## Project structure
-
-See [CLAUDE.md](CLAUDE.md) for a deeper architecture walkthrough (route/controller layout, domain model, and the admin Livewire components).
