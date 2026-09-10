@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Category;
+use App\Models\ProductSize;
+use App\Models\ProductColor;
+use App\Models\ProductImages;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Products extends Model
+{
+    use HasFactory;
+    protected $table = 'products';
+    protected $fillable = [
+        'cat_id',
+        'sub_cat_id',
+        'end_cat_id',
+        'name',
+        'slug',
+        'brand',
+        'short_description',
+        'description',
+        'original_price',
+        'selling_price',
+        'quantity',
+        'trending',
+        'status',
+        'meta_title',
+        'meta_keyword',
+        'meta_description'
+    ];
+
+    public function ProductsImages(){
+        return $this->hasMany(ProductImages::class, 'product_id', 'id');
+    }
+
+    public function ProductColor(){
+        return $this->hasMany(ProductColor::class, 'product_id', 'id');
+    }
+
+    public function ProductSize(){
+        return $this->hasMany(ProductSize::class, 'product_id', 'id');
+    }
+
+    public function category(){
+        return $this->belongsTo(Category::class, 'cat_id', 'id');
+    }
+
+    public function subcategory(){
+        return $this->belongsTo(SubCategories::class, 'sub_cat_id', 'id');
+    }
+
+
+    public function endcategory(){
+        return $this->belongsTo(ItemCategory::class, 'end_cat_id', 'id');
+    }
+
+
+
+
+}
