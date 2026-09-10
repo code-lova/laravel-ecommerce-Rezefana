@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-**Rezefana** — a Laravel 9 e-commerce storefront + admin panel. This directory is a raw Hostinger hosting backup (`domains/delacliquedesigns.com/public_html/rezefana`), not a normal git checkout — there is no `.git` here. Treat it as a snapshot of a live production site.
+**Rezefana** — a Laravel 9 e-commerce storefront + admin panel. This started as a raw hosting backup of a live production site, so its layout has some deployment-specific quirks (see below) rather than a from-scratch project structure.
 
 ### Non-standard deployment layout
 
@@ -30,7 +30,7 @@ php artisan test --filter=NameOfTest   # Run a single test
 vendor/bin/pint                 # Laravel Pint code style fixer
 ```
 
-There is no `.env` committed with real secrets checked in — `.env` exists in this backup with live-looking values; treat it as sensitive and do not print/commit it. `PAYSTACK_SECRETE_KEY` (note the site's misspelling of "secret") is read directly via `env()` in `FrontendController` and is **not** listed in `.env.example` or `config/services.php` — it must be set manually.
+Never print, log, or commit the contents of `.env` — `.gitignore` already excludes it, but be careful not to paste its values into commits, PRs, or chat output. `PAYSTACK_SECRETE_KEY` (note the site's misspelling of "secret") is read directly via `env()` in `FrontendController` and is **not** listed in `.env.example` or `config/services.php` — it must be set manually and kept out of version control like any other secret.
 
 Only default Laravel test stubs exist (`tests/Unit/ExampleTest.php`, `tests/Feature/ExampleTest.php`) — there is no real test coverage for the app's business logic.
 

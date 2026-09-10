@@ -1,66 +1,91 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Re-Zefana
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Re-Zefana is a Laravel 9 e-commerce application for an online fashion/clothing store, with a customer-facing storefront and a full admin panel for managing the shop.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Storefront**
+- Browse products through a three-level category structure (category → sub-category → end category), plus brands
+- Product search, reviews/ratings, wishlist
+- Cart and checkout, with online payments via [Paystack](https://paystack.com)
+- Customer account area (profile, password, order history)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Admin panel**
+- Category/sub-category/end-category, brand, color and size management
+- Product management (images, colors, sizes, pricing)
+- Orders, carts, customers (block/unblock), reviews and wishlists
+- Site content: homepage sliders, banners, ads, logo/favicon, about us, contact us, FAQ, call-to-action
+- Store configuration: currencies, shipping costs, payment methods, feature switches
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tech stack
 
-## Learning Laravel
+- PHP 8.0+, Laravel 9
+- Livewire 2 (used for a few admin CRUD screens — Brands, Colors, Sizes)
+- Blade views, jQuery/Bootstrap-based admin and storefront themes (vendored under `assets/`)
+- Vite for the storefront's own CSS/JS (`resources/`)
+- MySQL (or any Laravel-supported database)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Requirements
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- PHP >= 8.0.2, with the extensions Laravel 9 requires
+- Composer
+- Node.js + npm
+- A MySQL (or compatible) database
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Setup
 
-## Laravel Sponsors
+```bash
+composer install
+npm install
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+cp .env.example .env
+php artisan key:generate
+```
 
-### Premium Partners
+Edit `.env` and configure:
+- `DB_*` — your database connection
+- `APP_URL` — the URL you'll access the app at
+- `PAYSTACK_SECRETE_KEY` — your Paystack secret key (note the project's spelling). This variable isn't listed in `.env.example` but is read directly via `env('PAYSTACK_SECRETE_KEY')` in `FrontendController` for initiating/verifying payments.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+```bash
+php artisan migrate
+npm run build     # or `npm run dev` while developing
+```
 
-## Contributing
+There are no database seeders, so create your first admin user manually, then flip it to admin (`role_as` = `'1'`):
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan tinker
+>>> $u = \App\Models\User::factory()->create(['email' => 'admin@example.com', 'password' => bcrypt('password')]);
+>>> $u->update(['role_as' => '1']);
+```
 
-## Code of Conduct
+(Or register a normal account through the app, then update its `role_as` column to `'1'` directly in the database.)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Make sure the `uploads/` directory (and its subfolders: `products`, `category`, `slider`, `banner`, `ads`, `logofav`, `about`, `contact`, `orders`) is writable — admin image uploads are written there directly via relative paths, not through Laravel's storage disk, so no `php artisan storage:link` is required.
 
-## Security Vulnerabilities
+## Running locally
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+This project's `index.php` and `.htaccess` live at the **project root** (mirroring its Hostinger production deployment), not in `public/` — `public/` only holds the Vite build output. Because of this, `php artisan serve` will not work here (it hardcodes a path to `public/index.php`, which doesn't exist in this layout).
 
-## License
+Serve the app with PHP's built-in server rooted at the project directory instead:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php -S 127.0.0.1:8000 -t .
+```
+
+Then visit `http://127.0.0.1:8000`.
+
+## Tests
+
+```bash
+php artisan test
+# or
+vendor/bin/phpunit
+```
+
+Only the default Laravel example tests are present — there is no test coverage for the app's business logic yet.
+
+## Project structure
+
+See [CLAUDE.md](CLAUDE.md) for a deeper architecture walkthrough (route/controller layout, domain model, and the admin Livewire components).
