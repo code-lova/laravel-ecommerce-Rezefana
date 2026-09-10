@@ -66,15 +66,13 @@ Make sure the `uploads/` directory (and its subfolders: `products`, `category`, 
 
 ## Running locally
 
-This project's `index.php` and `.htaccess` live at the **project root** (mirroring its Hostinger production deployment), not in `public/` — `public/` only holds the Vite build output. Because of this, `php artisan serve` will not work here (it hardcodes a path to `public/index.php`, which doesn't exist in this layout).
-
-Serve the app with PHP's built-in server rooted at the project directory instead:
+This project's `index.php` and `.htaccess` live at the **project root** (mirroring its Hostinger production deployment), not in `public/`. `AppServiceProvider` rebinds Laravel's `path.public` container binding to the project root to account for this, so `public_path()` — and everything built on it, including `php artisan serve` — resolves correctly:
 
 ```bash
-php -S 127.0.0.1:8000 -t .
+php artisan serve
 ```
 
-Then visit `http://127.0.0.1:8000`.
+Then visit the URL it prints (default `http://127.0.0.1:8000`).
 
 ## Tests
 
